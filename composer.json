@@ -1,0 +1,39 @@
+{
+  "name": "gustavosantarosa/handler-basics-extension",
+  "license": "MIT",
+  "homepage": "http://www.gustavosantarosa.esy.es/",
+  "description": "Handler Basics Extension",
+  "require": {
+    "php": "^8.0",
+    "laravel/framework": "^10.0",
+    "sentry/sentry-laravel": "^3.0@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "GustavoSantarosa\\HandlerBasicsExtension\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Luis Gustavo Santarosa",
+      "email": "gustavo-computacao@hotmail.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "gustavo-computacao@hotmail.com"
+  },
+  "minimum-stability": "dev",
+  "extra": {
+    "laravel": {
+      "providers": [
+        "GustavoSantarosa\\HandlerBasicsExtension\\Provider\\HandlerBasicsExtensionProvider"
+      ]
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  }
+}
