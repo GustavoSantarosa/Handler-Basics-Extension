@@ -31,10 +31,10 @@ Nele existem algumas ferramentas uteis.
 
 ## 🧐 Outras Bibliotecas
 
-- [Enum-Basics-Extension](https://packagist.org/packages/gustavosantarosa/enum-basics-extension) - Enum Basics Extension
-- [SetSchema-Trait](https://packagist.org/packages/gustavosantarosa/setschema-trait-postgresql) - SetSchema Trait (Postgresql)
-- [Validate-Trait](https://packagist.org/packages/gustavosantarosa/validate-trait) - Validate Trait
-- [PerPage-Trait](https://packagist.org/packages/gustavosantarosa/perpage-trait) - Per Page Trait
+- [Enum-Basics-Extension](https://packagist.org/packages/gustavosantarosa/enum-basics-extension) - Utilizado para auxiliar nas Classes de Enums;
+- [SetSchema-Trait](https://packagist.org/packages/gustavosantarosa/setschema-trait-postgresql) - Suprir a necessidade de setar os schemas automaticamente do PostgreSQL;
+- [Validate-Trait](https://packagist.org/packages/gustavosantarosa/validate-trait) - Bindar os Requests automaticamente de acordo com o caminho do Service Pattern;
+- [PerPage-Trait](https://packagist.org/packages/gustavosantarosa/perpage-trait) - Padronizar a quantidade do paginate na api inteira e definir uma quantidade máxima;
 
 ## ⛏️ Ferramentas
 
