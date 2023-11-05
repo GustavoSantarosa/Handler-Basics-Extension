@@ -108,6 +108,25 @@ trait ApiResponseTrait
     }
 
     /**
+     * InternalServerErrorResponse function
+     */
+    public function internalServerErrorResponse(
+        string $message = null,
+        array $data = [],
+        array $arrayToAppend = []
+    ): void {
+        $this->exceptionResponse(
+            Response::HTTP_INTERNAL_SERVER_ERROR,
+            $this->customResponse(
+                success: false,
+                message: $message ?? __('A API está temporariamente em manutenção, tente novamente mais tarde!'),
+                data: (object) $data,
+                arrayToAppend: $arrayToAppend
+            )
+        );
+    }
+
+    /**
      * AbortResponse function.
      */
     public function abortResponse(int $code = 0, string $message = null): void
