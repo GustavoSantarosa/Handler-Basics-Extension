@@ -179,13 +179,7 @@ trait ApiResponseTrait
 
             if (isset($this->defaultService) && $this->defaultService->getModel()) {
                 if ($allowedInclude) {
-                    $content['allowed_includes'] = [];
-
-                    $allowedIncludes = array_filter($this->defaultService->getModel()->allowedIncludes, function ($key) {
-                        return !is_numeric($key);
-                    }, ARRAY_FILTER_USE_KEY);
-
-                    $content['allowed_includes'] = array_keys($allowedIncludes);
+                    $content['allowed_includes'] = $this->defaultService->getModel()->allowedIncludes;
                 }
             }
         }
