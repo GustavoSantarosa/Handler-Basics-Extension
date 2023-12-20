@@ -2,14 +2,15 @@
 
 namespace GustavoSantarosa\HandlerBasicsExtension\Exceptions;
 
-use GustavoSantarosa\HandlerBasicsExtension\Traits\ApiResponseTrait;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use TypeError;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use GustavoSantarosa\HandlerBasicsExtension\Traits\ApiResponseTrait;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class BaseHandler extends ExceptionHandler
 {
@@ -64,6 +65,7 @@ class BaseHandler extends ExceptionHandler
 
         match (true) {
             $e instanceof ValidationException           => $this->unprocessableEntityResponse(data: $e->errors()),
+            $e instanceof TypeError                     => $this->badRequestResponse('Invalid type for parameter ' . $e->getTrace()[0]['args'][0]),
             $e instanceof MethodNotAllowedHttpException => $this->badRequestResponse(),
             $e instanceof ModelNotFoundException        => $this->notFoundResponse(),
             $e instanceof NotFoundHttpException         => $this->notFoundResponse(),
