@@ -68,7 +68,7 @@ class BaseHandler extends ExceptionHandler
             $e instanceof TypeError                     => $this->badRequestResponse('Invalid type for parameter ' . $e->getTrace()[0]['args'][0]),
             $e instanceof MethodNotAllowedHttpException => $this->badRequestResponse(),
             $e instanceof ModelNotFoundException        => $this->notFoundResponse(),
-            $e instanceof NotFoundHttpException         => $this->notFoundResponse(),
+            $e instanceof NotFoundHttpException         => $this->notFoundResponse('' != $e->getMessage() ? $e->getMessage() : null),
             $e instanceof HttpException                 => $this->abortResponse($e->getStatusCode(), $e->getMessage()),
             default                                     => false,
         };
