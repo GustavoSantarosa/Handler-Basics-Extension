@@ -3,14 +3,13 @@
 namespace GustavoSantarosa\HandlerBasicsExtension\Exceptions;
 
 use Exception;
-use TypeError;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use GustavoSantarosa\HandlerBasicsExtension\Traits\ApiResponseTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BaseHandler extends ExceptionHandler
 {
@@ -64,13 +63,13 @@ class BaseHandler extends ExceptionHandler
         }
 
         match (true) {
-            $e instanceof ValidationException           => $this->unprocessableEntityResponse(data: $e->errors()),
-            $e instanceof TypeError                     => $this->badRequestResponse('Invalid type for parameter ' . $e->getTrace()[0]['args'][0]),
-            $e instanceof MethodNotAllowedHttpException => $this->badRequestResponse(),
-            $e instanceof ModelNotFoundException        => $this->notFoundResponse(),
-            $e instanceof NotFoundHttpException         => $this->notFoundResponse('' != $e->getMessage() ? $e->getMessage() : null),
-            $e instanceof HttpException                 => $this->abortResponse($e->getStatusCode(), $e->getMessage()),
-            default                                     => false,
+            $e instanceof ValidationException                            => $this->unprocessableEntityResponse(data: $e->errors()),
+            $e instanceof \TypeError && isset($e->getTrace()[0]['args']) => $this->badRequestResponse('Invalid type for parameter '.$e->getTrace()[0]['args'][0]),
+            $e instanceof MethodNotAllowedHttpException                  => $this->badRequestResponse(),
+            $e instanceof ModelNotFoundException                         => $this->notFoundResponse(),
+            $e instanceof NotFoundHttpException                          => $this->notFoundResponse('' != $e->getMessage() ? $e->getMessage() : null),
+            $e instanceof HttpException                                  => $this->abortResponse($e->getStatusCode(), $e->getMessage()),
+            default                                                      => false,
         };
 
         if (!config('app.debug')) {
