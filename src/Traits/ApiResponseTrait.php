@@ -196,4 +196,35 @@ trait ApiResponseTrait
     {
         throw new ApiResponseException(code: $code, apiResponse: $content);
     }
+
+    public function apiResponse(
+        object $data = null,
+        string $message = null,
+        int $status = 200
+    ): JsonResponse {
+
+        $content = [
+            "success" => $status >= 200 && $status < 300,
+            "message" => $message ?? __("Response is successful!"),
+        ];
+
+        if(!is_null($data)) {
+            if($data instanceof LengthAwarePaginator) {
+                $content["data"] = $data->items();
+
+                $content["pagination"] = [
+                    "total" => $data->total(),
+                    "current_page" => $data->currentPage(),
+                    "next_page" => $data->hasMorePages() ? $data->currentPage() + 1 : null,
+                    "last_page" => $data->lastPage(),
+                    "per_page" => $data->perPage(),
+                    "has_more_pages" => $data->hasMorePages(),
+                ];
+            } else {
+                $content["data"] = $data;
+            }
+        }
+
+        return response()->json($content, $status);
+    }
 }
