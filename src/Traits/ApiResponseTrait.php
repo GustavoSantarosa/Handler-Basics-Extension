@@ -18,73 +18,58 @@ trait ApiResponseTrait
         array $arrayToAppend = [],
         bool $allowedInclude = false
     ): JsonResponse {
-        return response()->json(
-            $this->customResponse(
-                success: true,
-                message: $message ?? __('messages.successfully.show'),
-                data: (object) $data,
-                arrayToAppend: $arrayToAppend,
-                allowedInclude: $allowedInclude
-            ),
-            Response::HTTP_OK,
+        return $this->apiResponse(
+            data: $data,
+            message: $message ?? __('messages.successfully.show'),
+            status: Response::HTTP_OK,
+            arrayToAppend: $arrayToAppend,
+            allowedInclude: $allowedInclude
         );
     }
 
     /**
      * BadRequestResponse function.
      */
-    public function badRequestResponse(string $message = null): void
+    public function badRequestResponse(string $message = null, bool $exceptionResponse = false): void
     {
-        $this->exceptionResponse(
-            Response::HTTP_BAD_REQUEST,
-            $this->customResponse(
-                success: false,
-                message: $message ?? __('Bad Request')
-            ),
+        $this->customResponse(
+            message: $message ?? __('Bad Request'),
+            status: Response::HTTP_BAD_REQUEST
         );
     }
 
     /**
      * ForbiddenResponse function.
      */
-    public function forbiddenResponse(string $message = null): void
+    public function forbiddenResponse(string $message = null, bool $exceptionResponse = false): void
     {
-        $this->exceptionResponse(
-            Response::HTTP_FORBIDDEN,
-            $this->customResponse(
-                success: false,
-                message: $message ?? __('Forbidden')
-            ),
+        $this->customResponse(
+            message: $message ?? __('Forbidden'),
+            status: Response::HTTP_FORBIDDEN
         );
     }
 
     /**
      * UnauthorizedResponse function.
      */
-    public function unauthorizedResponse(string $message = null): void
+    public function unauthorizedResponse(string $message = null, bool $exceptionResponse = false): void
     {
-        $this->exceptionResponse(
-            Response::HTTP_UNAUTHORIZED,
-            $this->customResponse(
-                success: false,
-                message: $message ?? __('messages.successfully.show')
-            ),
+        $this->customResponse(
+            message: $message ?? __('messages.successfully.show'),
+            status: Response::HTTP_UNAUTHORIZED
         );
     }
 
     /**
      * NotFoundResponse function.
      */
-    public function notFoundResponse(string $message = null, array $data = [], array $arrayToAppend = []): void
+    public function notFoundResponse(string $message = null, array $data = [], array $arrayToAppend = [], bool $exceptionResponse = false): void
     {
-        $this->exceptionResponse(
-            Response::HTTP_NOT_FOUND,
-            $this->customResponse(
-                success: false,
-                message: $message ?? __('messages.errors.notfound'),
-                data: (object) $data,
-                arrayToAppend: $arrayToAppend
-            ),
+        $this->customResponse(
+            message: $message ?? __('messages.errors.notfound'),
+            data: (object) $data,
+            status: Response::HTTP_NOT_FOUND,
+            arrayToAppend: $arrayToAppend
         );
     }
 
@@ -94,16 +79,14 @@ trait ApiResponseTrait
     public function unprocessableEntityResponse(
         string $message = null,
         array $data = [],
-        array $arrayToAppend = []
+        array $arrayToAppend = [],
+        bool $exceptionResponse = false
     ): void {
-        $this->exceptionResponse(
-            Response::HTTP_UNPROCESSABLE_ENTITY,
-            $this->customResponse(
-                success: false,
-                message: $message ?? __('messages.errors.validation'),
-                data: (object) $data,
-                arrayToAppend: $arrayToAppend
-            )
+        $this->customResponse(
+            message: $message ?? __('messages.errors.validation'),
+            data: (object) $data,
+            status: Response::HTTP_UNPROCESSABLE_ENTITY,
+            arrayToAppend: $arrayToAppend
         );
     }
 
@@ -113,16 +96,14 @@ trait ApiResponseTrait
     public function internalServerErrorResponse(
         string $message = null,
         array $data = [],
-        array $arrayToAppend = []
+        array $arrayToAppend = [],
+        bool $exceptionResponse = false
     ): void {
-        $this->exceptionResponse(
-            Response::HTTP_INTERNAL_SERVER_ERROR,
-            $this->customResponse(
-                success: false,
-                message: $message ?? __('A API está temporariamente em manutenção, tente novamente mais tarde!'),
-                data: (object) $data,
-                arrayToAppend: $arrayToAppend
-            )
+        $this->customResponse(
+            message: $message ?? __('A API está temporariamente em manutenção, tente novamente mais tarde!'),
+            data: (object) $data,
+            status: Response::HTTP_INTERNAL_SERVER_ERROR,
+            arrayToAppend: $arrayToAppend
         );
     }
 
@@ -131,82 +112,27 @@ trait ApiResponseTrait
      */
     public function abortResponse(int $code = 0, string $message = null): void
     {
-        $this->exceptionResponse(
-            $code,
-            $this->customResponse(
-                success: false,
-                message: $message,
-            )
+        $this->customResponse(
+            message: $message,
+            status: $code,
         );
     }
 
-    /**
-     * CustomResponse function.
-     */
     public function customResponse(
-        bool $success,
-        string $message = null,
         object $data = null,
-        array $arrayToAppend = [],
-        bool $allowedInclude = false
-    ): array {
+        string $message = null,
+        int $status = 200,
+        bool $allowedInclude = false,
+        array $arrayToAppend = []
+    ): JsonResponse {
         $content = [
-            'success' => $success,
-            'message' => $message,
+            "success" => $status >= 200 && $status < 300,
+            "message" => $message ?? "Response is successful!",
         ];
 
         if ($allowedInclude) {
             $content['allowed_includes'] = [];
         }
-
-        $content += $arrayToAppend;
-
-        if ($data) {
-            $content += [
-                'data' => $data,
-            ];
-
-            if (isset($data->resource) && $data->resource instanceof LengthAwarePaginator) {
-                $content['pagination'] = [
-                    'total'        => $data->total(),
-                    'current_page' => $data->currentPage(),
-                    'next_page'    => $data->hasMorePages() ? $data->currentPage() + 1 : null,
-                    'last_page'    => $data->lastPage(),
-                    'per_page'     => $data->perPage(),
-                    'is_last_page' => !$data->hasMorePages(),
-                ];
-            }
-
-            if (isset($this->defaultService) && $this->defaultService->getModel()) {
-                if ($allowedInclude) {
-                    $content['allowed_includes'] = $this->defaultService->getModel()->allowedIncludes;
-                }
-            }
-        }
-
-        return $content;
-    }
-
-    /**
-     * ExceptionResponse function.
-     *
-     * throw new ApiResponseException(code: $code, apiResponse: $content);
-     */
-    public function exceptionResponse(int $code, array $content): void
-    {
-        throw new ApiResponseException(code: $code, apiResponse: $content);
-    }
-
-    public function apiResponse(
-        object $data = null,
-        string $message = null,
-        int $status = 200
-    ): JsonResponse {
-
-        $content = [
-            "success" => $status >= 200 && $status < 300,
-            "message" => $message ?? __("Response is successful!"),
-        ];
 
         if(!is_null($data)) {
             if($data instanceof LengthAwarePaginator) {
@@ -223,7 +149,15 @@ trait ApiResponseTrait
             } else {
                 $content["data"] = $data;
             }
+
+            if (isset($this->defaultService) && $this->defaultService->getModel()) {
+                if ($allowedInclude) {
+                    $content['allowed_includes'] = $this->defaultService->getModel()->allowedIncludes;
+                }
+            }
         }
+
+        $content += $arrayToAppend;
 
         return response()->json($content, $status);
     }
