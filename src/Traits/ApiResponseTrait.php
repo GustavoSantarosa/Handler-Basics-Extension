@@ -18,7 +18,7 @@ trait ApiResponseTrait
         array $arrayToAppend = [],
         bool $allowedInclude = false
     ): JsonResponse {
-        return $this->apiResponse(
+        return $this->customResponse(
             data: $data,
             message: $message ?? __('messages.successfully.show'),
             status: Response::HTTP_OK,
@@ -30,7 +30,7 @@ trait ApiResponseTrait
     /**
      * BadRequestResponse function.
      */
-    public function badRequestResponse(string $message = null, bool $exceptionResponse = false): void
+    public function badRequestResponse(string $message = null): void
     {
         $this->customResponse(
             message: $message ?? __('Bad Request'),
@@ -41,7 +41,7 @@ trait ApiResponseTrait
     /**
      * ForbiddenResponse function.
      */
-    public function forbiddenResponse(string $message = null, bool $exceptionResponse = false): void
+    public function forbiddenResponse(string $message = null): void
     {
         $this->customResponse(
             message: $message ?? __('Forbidden'),
@@ -52,7 +52,7 @@ trait ApiResponseTrait
     /**
      * UnauthorizedResponse function.
      */
-    public function unauthorizedResponse(string $message = null, bool $exceptionResponse = false): void
+    public function unauthorizedResponse(string $message = null): void
     {
         $this->customResponse(
             message: $message ?? __('messages.successfully.show'),
@@ -63,7 +63,7 @@ trait ApiResponseTrait
     /**
      * NotFoundResponse function.
      */
-    public function notFoundResponse(string $message = null, array $data = [], array $arrayToAppend = [], bool $exceptionResponse = false): void
+    public function notFoundResponse(string $message = null, array $data = [], array $arrayToAppend = []): void
     {
         $this->customResponse(
             message: $message ?? __('messages.errors.notfound'),
@@ -79,8 +79,7 @@ trait ApiResponseTrait
     public function unprocessableEntityResponse(
         string $message = null,
         array $data = [],
-        array $arrayToAppend = [],
-        bool $exceptionResponse = false
+        array $arrayToAppend = []
     ): void {
         $this->customResponse(
             message: $message ?? __('messages.errors.validation'),
@@ -96,8 +95,7 @@ trait ApiResponseTrait
     public function internalServerErrorResponse(
         string $message = null,
         array $data = [],
-        array $arrayToAppend = [],
-        bool $exceptionResponse = false
+        array $arrayToAppend = []
     ): void {
         $this->customResponse(
             message: $message ?? __('A API está temporariamente em manutenção, tente novamente mais tarde!'),
