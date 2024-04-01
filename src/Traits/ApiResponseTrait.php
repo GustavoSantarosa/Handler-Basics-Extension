@@ -117,12 +117,14 @@ trait ApiResponseTrait
     }
 
     public function customResponse(
-        object $data = null,
+        object|array $data = null,
         string $message = null,
         int $status = 200,
         bool $allowedInclude = false,
         array $arrayToAppend = []
     ): JsonResponse {
+        $data = is_array($data) ? (object) $data : $data;
+
         $content = [
             "success" => $status >= 200 && $status < 300,
             "message" => $message ?? "Response is successful!",
