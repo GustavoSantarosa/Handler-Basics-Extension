@@ -60,9 +60,6 @@ class BaseHandler extends ExceptionHandler
     {
         $callback = match (true) {
             $e instanceof ValidationException => $this->customResponse(status: Response::HTTP_UNPROCESSABLE_ENTITY, message: 'Erro de validação!', data: $e->errors()),
-            $e instanceof \TypeError
-                && isset($e->getTrace()[0]['args'])
-                && is_string($e->getTrace()[0]['args'][0]) => $this->customResponse(status: Response::HTTP_BAD_REQUEST, message: 'Tipo inválido para o parâmetro '.$e->getTrace()[0]['args'][0]),
             $e instanceof ModelNotFoundException           => $this->customResponse(status: Response::HTTP_NOT_FOUND, message: 'Sem resultados para a sua pesquisa!'),
             $e instanceof NotFoundHttpException            => $this->customResponse(status: Response::HTTP_NOT_FOUND, message: $e->getMessage()),
             $e instanceof HttpException                    => $this->customResponse(status: $e->getStatusCode(), message: $e->getMessage()),
