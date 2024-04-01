@@ -12,7 +12,7 @@ trait ApiResponseTrait
      * OkResponse function.
      */
     public function okResponse(
-        array|object $data = [],
+        array|object|null $data = null,
         ?string $message = null,
         array $arrayToAppend = [],
         bool $allowedInclude = false
@@ -62,11 +62,14 @@ trait ApiResponseTrait
     /**
      * NotFoundResponse function.
      */
-    public function notFoundResponse(?string $message = null, array $data = [], array $arrayToAppend = []): void
-    {
+    public function notFoundResponse(
+        ?string $message = null,
+        array|object|null $data = null,
+        array $arrayToAppend = []
+    ): void {
         $this->customResponse(
             message: $message ?? __('messages.errors.notfound'),
-            data: (object) $data,
+            data: $data,
             status: Response::HTTP_NOT_FOUND,
             arrayToAppend: $arrayToAppend
         );
@@ -77,12 +80,12 @@ trait ApiResponseTrait
      */
     public function unprocessableEntityResponse(
         ?string $message = null,
-        array $data = [],
+        array|object|null $data = null,
         array $arrayToAppend = []
     ): void {
         $this->customResponse(
             message: $message ?? __('messages.errors.validation'),
-            data: (object) $data,
+            data: $data,
             status: Response::HTTP_UNPROCESSABLE_ENTITY,
             arrayToAppend: $arrayToAppend
         );
@@ -93,12 +96,12 @@ trait ApiResponseTrait
      */
     public function internalServerErrorResponse(
         ?string $message = null,
-        array $data = [],
+        array|object|null $data = null,
         array $arrayToAppend = []
     ): void {
         $this->customResponse(
             message: $message ?? __('A API está temporariamente em manutenção, tente novamente mais tarde!'),
-            data: (object) $data,
+            data: $data,
             status: Response::HTTP_INTERNAL_SERVER_ERROR,
             arrayToAppend: $arrayToAppend
         );
@@ -116,7 +119,7 @@ trait ApiResponseTrait
     }
 
     public function customResponse(
-        ?object $data = null,
+        array|object|null $data = null,
         ?string $message = null,
         int $status = 200,
         bool $allowedInclude = false,
