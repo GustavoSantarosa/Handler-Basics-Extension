@@ -23,7 +23,7 @@
   "support": {
     "email": "gustavo-computacao@hotmail.com"
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "extra": {
     "laravel": {
       "providers": [
