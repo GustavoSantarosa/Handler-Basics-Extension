@@ -2,10 +2,9 @@
 
 namespace GustavoSantarosa\HandlerBasicsExtension\Traits;
 
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
-use GustavoSantarosa\HandlerBasicsExtension\Exceptions\ApiResponseException;
 
 trait ApiResponseTrait
 {
@@ -14,7 +13,7 @@ trait ApiResponseTrait
      */
     public function okResponse(
         array|object $data = [],
-        string $message = null,
+        ?string $message = null,
         array $arrayToAppend = [],
         bool $allowedInclude = false
     ): JsonResponse {
@@ -30,7 +29,7 @@ trait ApiResponseTrait
     /**
      * BadRequestResponse function.
      */
-    public function badRequestResponse(string $message = null): void
+    public function badRequestResponse(?string $message = null): void
     {
         $this->customResponse(
             message: $message ?? __('Bad Request'),
@@ -41,7 +40,7 @@ trait ApiResponseTrait
     /**
      * ForbiddenResponse function.
      */
-    public function forbiddenResponse(string $message = null): void
+    public function forbiddenResponse(?string $message = null): void
     {
         $this->customResponse(
             message: $message ?? __('Forbidden'),
@@ -52,7 +51,7 @@ trait ApiResponseTrait
     /**
      * UnauthorizedResponse function.
      */
-    public function unauthorizedResponse(string $message = null): void
+    public function unauthorizedResponse(?string $message = null): void
     {
         $this->customResponse(
             message: $message ?? __('messages.successfully.show'),
@@ -63,7 +62,7 @@ trait ApiResponseTrait
     /**
      * NotFoundResponse function.
      */
-    public function notFoundResponse(string $message = null, array $data = [], array $arrayToAppend = []): void
+    public function notFoundResponse(?string $message = null, array $data = [], array $arrayToAppend = []): void
     {
         $this->customResponse(
             message: $message ?? __('messages.errors.notfound'),
@@ -77,7 +76,7 @@ trait ApiResponseTrait
      * UnprocessableEntityResponse function.
      */
     public function unprocessableEntityResponse(
-        string $message = null,
+        ?string $message = null,
         array $data = [],
         array $arrayToAppend = []
     ): void {
@@ -90,10 +89,10 @@ trait ApiResponseTrait
     }
 
     /**
-     * InternalServerErrorResponse function
+     * InternalServerErrorResponse function.
      */
     public function internalServerErrorResponse(
-        string $message = null,
+        ?string $message = null,
         array $data = [],
         array $arrayToAppend = []
     ): void {
@@ -108,7 +107,7 @@ trait ApiResponseTrait
     /**
      * AbortResponse function.
      */
-    public function abortResponse(int $code = 0, string $message = null): void
+    public function abortResponse(int $code = 0, ?string $message = null): void
     {
         $this->customResponse(
             message: $message,
@@ -117,8 +116,8 @@ trait ApiResponseTrait
     }
 
     public function customResponse(
-        object|array $data = null,
-        string $message = null,
+        ?object $data = null,
+        ?string $message = null,
         int $status = 200,
         bool $allowedInclude = false,
         array $arrayToAppend = []
@@ -126,28 +125,28 @@ trait ApiResponseTrait
         $data = is_array($data) ? (object) $data : $data;
 
         $content = [
-            "success" => $status >= 200 && $status < 300,
-            "message" => $message ?? "Response is successful!",
+            'success' => $status >= 200 && $status < 300,
+            'message' => $message ?? 'Response is successful!',
         ];
 
         if ($allowedInclude) {
             $content['allowed_includes'] = [];
         }
 
-        if(!is_null($data)) {
-            if($data instanceof LengthAwarePaginator) {
-                $content["data"] = $data->items();
+        if (!is_null($data)) {
+            if ($data instanceof LengthAwarePaginator) {
+                $content['data'] = $data->items();
 
-                $content["pagination"] = [
-                    "total" => $data->total(),
-                    "current_page" => $data->currentPage(),
-                    "next_page" => $data->hasMorePages() ? $data->currentPage() + 1 : null,
-                    "last_page" => $data->lastPage(),
-                    "per_page" => $data->perPage(),
-                    "has_more_pages" => $data->hasMorePages(),
+                $content['pagination'] = [
+                    'total'          => $data->total(),
+                    'current_page'   => $data->currentPage(),
+                    'next_page'      => $data->hasMorePages() ? $data->currentPage() + 1 : null,
+                    'last_page'      => $data->lastPage(),
+                    'per_page'       => $data->perPage(),
+                    'has_more_pages' => $data->hasMorePages(),
                 ];
             } else {
-                $content["data"] = $data;
+                $content['data'] = $data;
             }
 
             if (isset($this->defaultService) && $this->defaultService->getModel()) {
