@@ -8,6 +8,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 trait ApiResponseTrait
 {
+    protected array $allowedIncludes = [];
+    protected array $allowedFilters  = [];
+
     /**
      * OkResponse function.
      */
@@ -15,14 +18,16 @@ trait ApiResponseTrait
         array|object|null $data = null,
         ?string $message = null,
         array $arrayToAppend = [],
-        bool $allowedInclude = false
+        bool $allowedInclude = false,
+        bool $allowedFilters = false
     ): JsonResponse {
         return $this->customResponse(
             data: $data,
             message: $message ?? __('messages.successfully.show'),
             status: Response::HTTP_OK,
             arrayToAppend: $arrayToAppend,
-            allowedInclude: $allowedInclude
+            allowedInclude: $allowedInclude,
+            allowedFilters: $allowedFilters
         );
     }
 
@@ -123,6 +128,7 @@ trait ApiResponseTrait
         ?string $message = null,
         int $status = 200,
         bool $allowedInclude = false,
+        bool $allowedFilters = false,
         array $arrayToAppend = []
     ): JsonResponse {
         $data = is_array($data) ? (object) $data : $data;
@@ -132,8 +138,13 @@ trait ApiResponseTrait
             'message' => $message ?? 'Response is successful!',
         ];
 
-        if ($allowedInclude) {
-            $content['allowed_includes'] = [];
+
+        if (count($this->allowedIncludes) > 0 && $allowedInclude) {
+            $content['allowed_includes'] = $this->allowedIncludes;
+        }
+
+        if (count($this->allowedFilters) > 0 && $allowedFilters) {
+            $content['allowed_filters'] = $this->allowedFilters;
         }
 
         if (!is_null($data)) {
@@ -151,16 +162,41 @@ trait ApiResponseTrait
             } else {
                 $content['data'] = $data;
             }
-
-            if (isset($this->defaultService) && $this->defaultService->getModel()) {
-                if ($allowedInclude) {
-                    $content['allowed_includes'] = $this->defaultService->getModel()->allowedIncludes;
-                }
-            }
         }
 
         $content += $arrayToAppend;
 
         return response()->json($content, $status);
+    }
+
+    public function setAllowedIncludes(array $allowedIncludes): void
+    {
+        $this->allowedIncludes = $allowedIncludes;
+    }
+
+    public function getAllowedIncludes(): array
+    {
+        return $this->allowedIncludes;
+    }
+
+    public function setAllowedFilters(array $allowedFilters): void
+    {
+        $this->allowedFilters = $allowedFilters;
+    }
+
+    public function getAllowedFilters(): array
+    {
+        return $this->allowedFilters;
+    }
+
+    /**
+     * CheckIncludes function.
+     */
+    public function checkIncludes(): void
+    {
+        $include = request()->get('include', false);
+        if ($include && $diff = array_diff(explode(',', $include), $this->allowedIncludes)) {
+            $this->forbiddenResponse("The following includes are not allowed: '".implode(',', $diff)."', enabled: '".implode(',', $this->allowedIncludes)."'");
+        }
     }
 }
