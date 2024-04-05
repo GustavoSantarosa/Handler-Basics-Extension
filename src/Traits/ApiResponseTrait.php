@@ -2,9 +2,10 @@
 
 namespace GustavoSantarosa\HandlerBasicsExtension\Traits;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
+use GustavoSantarosa\HandlerBasicsExtension\Exceptions\ApiResponseException;
 
 trait ApiResponseTrait
 {
@@ -49,7 +50,8 @@ trait ApiResponseTrait
     {
         $this->customResponse(
             message: $message ?? __('Forbidden'),
-            status: Response::HTTP_FORBIDDEN
+            status: Response::HTTP_FORBIDDEN,
+            exception: true
         );
     }
 
@@ -129,6 +131,7 @@ trait ApiResponseTrait
         int $status = 200,
         bool $allowedInclude = false,
         bool $allowedFilters = false,
+        bool $exception = false,
         array $arrayToAppend = []
     ): JsonResponse {
         $data = is_array($data) ? (object) $data : $data;
@@ -172,6 +175,8 @@ trait ApiResponseTrait
         }
 
         $content += $arrayToAppend;
+
+        throw_if($exception, new ApiResponseException($status, $content));
 
         return response()->json($content, $status);
     }
