@@ -138,17 +138,24 @@ trait ApiResponseTrait
             'message' => $message ?? 'Response is successful!',
         ];
 
-
-        if (count($this->allowedIncludes) > 0 && $allowedInclude) {
+        if (
+            count($this->allowedIncludes) > 0
+            && $allowedInclude
+            && 'production' !== config('app.env')
+        ) {
             $content['allowed_includes'] = $this->allowedIncludes;
         }
 
-        if (count($this->allowedFilters) > 0 && $allowedFilters) {
+        if (
+            count($this->allowedFilters) > 0
+            && $allowedFilters
+            && 'production' !== config('app.env')
+        ) {
             $content['allowed_filters'] = $this->allowedFilters;
         }
 
         if (!is_null($data)) {
-            if ($data instanceof LengthAwarePaginator) {
+            if ($data->resource instanceof LengthAwarePaginator) {
                 $content['data'] = $data->items();
 
                 $content['pagination'] = [
