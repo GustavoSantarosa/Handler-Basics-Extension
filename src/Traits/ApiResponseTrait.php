@@ -2,10 +2,10 @@
 
 namespace GustavoSantarosa\HandlerBasicsExtension\Traits;
 
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use GustavoSantarosa\HandlerBasicsExtension\Exceptions\ApiResponseException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 trait ApiResponseTrait
 {
@@ -156,9 +156,8 @@ trait ApiResponseTrait
         ) {
             $content['allowed_filters'] = $this->allowedFilters;
         }
-
         if (!is_null($data)) {
-            if ($data->resource instanceof LengthAwarePaginator) {
+            if (isset($data->resource) && $data->resource instanceof LengthAwarePaginator) {
                 $content['data'] = $data->items();
 
                 $content['pagination'] = [
