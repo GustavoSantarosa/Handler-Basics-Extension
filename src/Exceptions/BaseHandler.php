@@ -3,14 +3,15 @@
 namespace GustavoSantarosa\HandlerBasicsExtension\Exceptions;
 
 use Exception;
-use GustavoSantarosa\HandlerBasicsExtension\Traits\ApiResponseTrait;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use GustavoSantarosa\HandlerBasicsExtension\Traits\ApiResponseTrait;
 
 class BaseHandler extends ExceptionHandler
 {
@@ -63,6 +64,7 @@ class BaseHandler extends ExceptionHandler
             $e instanceof ValidationException    => $this->customResponse(status: Response::HTTP_UNPROCESSABLE_ENTITY, message: 'Erro de validação!', data: $e->errors()),
             $e instanceof ModelNotFoundException => $this->customResponse(status: Response::HTTP_NOT_FOUND, message: 'Sem resultados para a sua pesquisa!'),
             $e instanceof NotFoundHttpException  => $this->customResponse(status: Response::HTTP_NOT_FOUND, message: $e->getMessage()),
+            $e instanceof AuthorizationException => $this->customResponse(status: Response::HTTP_UNAUTHORIZED, message: $e->getMessage()),
             $e instanceof HttpException          => $this->customResponse(status: $e->getStatusCode(), message: $e->getMessage()),
             !config('app.debug')                 => $this->customResponse(status: Response::HTTP_SERVICE_UNAVAILABLE, message: 'A API está temporariamente em manutenção, tente novamente mais tarde!'),
             default                              => false,
