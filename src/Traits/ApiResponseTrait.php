@@ -39,7 +39,8 @@ trait ApiResponseTrait
     {
         $this->customResponse(
             message: $message ?? __('Bad Request'),
-            status: Response::HTTP_BAD_REQUEST
+            status: Response::HTTP_BAD_REQUEST,
+            exception: true
         );
     }
 
@@ -62,7 +63,8 @@ trait ApiResponseTrait
     {
         $this->customResponse(
             message: $message ?? __('messages.successfully.show'),
-            status: Response::HTTP_UNAUTHORIZED
+            status: Response::HTTP_UNAUTHORIZED,
+            exception: true
         );
     }
 
@@ -78,7 +80,8 @@ trait ApiResponseTrait
             message: $message ?? __('messages.errors.notfound'),
             data: $data,
             status: Response::HTTP_NOT_FOUND,
-            arrayToAppend: $arrayToAppend
+            arrayToAppend: $arrayToAppend,
+            exception: true
         );
     }
 
@@ -94,7 +97,8 @@ trait ApiResponseTrait
             message: $message ?? __('messages.errors.validation'),
             data: $data,
             status: Response::HTTP_UNPROCESSABLE_ENTITY,
-            arrayToAppend: $arrayToAppend
+            arrayToAppend: $arrayToAppend,
+            exception: true
         );
     }
 
@@ -110,7 +114,8 @@ trait ApiResponseTrait
             message: $message ?? __('A API está temporariamente em manutenção, tente novamente mais tarde!'),
             data: $data,
             status: Response::HTTP_INTERNAL_SERVER_ERROR,
-            arrayToAppend: $arrayToAppend
+            arrayToAppend: $arrayToAppend,
+            exception: true
         );
     }
 
