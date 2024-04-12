@@ -23,6 +23,7 @@ class BaseHandler extends ExceptionHandler
      * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
+        ApiResponseException::class
     ];
 
     /**
