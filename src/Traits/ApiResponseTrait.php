@@ -197,7 +197,15 @@ trait ApiResponseTrait
 
     public function setAllowedFilters(array $allowedFilters): void
     {
-        $this->allowedFilters = $allowedFilters;
+        if (0 === count($this->allowedFilters)) {
+            $this->allowedFilters = $allowedFilters;
+
+            return;
+        }
+
+        $this->allowedFilters = array_unique(array_merge($this->allowedFilters, $allowedFilters));
+
+        $this->allowedFilters = array_values($this->allowedFilters);
     }
 
     public function getAllowedFilters(): array
